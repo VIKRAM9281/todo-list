@@ -22,7 +22,7 @@ const Show_Todo = () => {
       </ul>
         </div>
         <div className="col-4">
-          <Button variant='contained'>Add Todo</Button>
+      <button className='btn btn-primary'> Add Todo</button>
         </div>
       </div>
     </div>
