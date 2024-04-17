@@ -45,7 +45,7 @@ function ListMembers() {
       );
       setMembers(members.filter((member) => member._id !== memberToDelete));
       setDeleteDataModal(false);
-      setMemberToDelete(null); // Reset memberToDelete after successful deletion
+      setMemberToDelete(null);
     } catch (error) {
       console.error("Error deleting member:", error);
     }
@@ -64,10 +64,8 @@ function ListMembers() {
         throw new Error('Failed to add new member');
       }
       const addedMember = await response.json();
-      // Update the local state with the added member
       setMembers([...members, addedMember]);
       setOpenModal(false);
-      // Reset newMemberData after adding new member
       setNewMemberData({
         name: '',
         colour: '',
@@ -75,14 +73,13 @@ function ListMembers() {
       });
     } catch (error) {
       console.error('Error adding new member:', error);
-      // Handle error, show error message, etc.
     }
   };
   
 
   const closeModal = () => {
     setOpenModal(false);
-    setMemberToDelete(null); // Reset memberToDelete when modal is closed
+    setMemberToDelete(null); 
   };
 
   const handleChange = (e) => {
