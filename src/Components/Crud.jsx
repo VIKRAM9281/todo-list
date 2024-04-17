@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function ListMembers() {
+function Crud() {
   const [members, setMembers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [deleteDataModal,setDeleteDataModal]=useState(false)
@@ -256,4 +256,4 @@ function ListMembers() {
   );
 }
 
-export default ListMembers;
+export default Crud;
