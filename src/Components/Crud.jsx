@@ -3,13 +3,14 @@ import React, { useState, useEffect } from "react";
 function Crud() {
   const [members, setMembers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
-  const [deleteDataModal,setDeleteDataModal]=useState(false)
+  const [deleteDataModal, setDeleteDataModal] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [newMemberData, setNewMemberData] = useState({
     name: "",
     colour: "",
     age: ""
   });
+  const [selectedMember, setSelectedMember] = useState(null); // To store the selected member for editing
 
   useEffect(() => {
     fetchMembers();
@@ -53,33 +54,52 @@ function Crud() {
 
   const handleAddNewMember = async () => {
     try {
-      const response = await fetch('https://crudcrud.com/api/a665d38534804786b796a7011a832ec4/unicorns', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newMemberData),
-      });
+      const response = await fetch(
+        "https://crudcrud.com/api/a665d38534804786b796a7011a832ec4/unicorns",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newMemberData),
+        }
+      );
       if (!response.ok) {
-        throw new Error('Failed to add new member');
+        throw new Error("Failed to add new member");
       }
       const addedMember = await response.json();
       setMembers([...members, addedMember]);
       setOpenModal(false);
       setNewMemberData({
-        name: '',
-        colour: '',
-        age: '',
+        name: "",
+        colour: "",
+        age: "",
       });
     } catch (error) {
-      console.error('Error adding new member:', error);
+      console.error("Error adding new member:", error);
     }
   };
-  
+
+  const handleEdit = (memberId) => {
+    // Find the selected member by ID
+    const selected = members.find((member) => member._id === memberId);
+    if (selected) {
+      // Set the selected member for editing
+      setSelectedMember(selected);
+      // Populate the modal fields with the selected member data
+      setNewMemberData({
+        name: selected.name,
+        colour: selected.colour,
+        age: selected.age,
+      });
+      setOpenModal(true);
+    }
+  };
 
   const closeModal = () => {
     setOpenModal(false);
-    setMemberToDelete(null); 
+    setMemberToDelete(null);
+    setSelectedMember(null); // Reset selected member when modal is closed
   };
 
   const handleChange = (e) => {
@@ -100,7 +120,7 @@ function Crud() {
         </thead>
         <tbody>
           {members.map((member) => (
-            <tr key={member._id}>
+            <tr key={member._id} onDoubleClick={() => handleEdit(member._id)}>
               <td>{member.name}</td>
               <td>{member.colour}</td>
               <td>{member.age}</td>
@@ -136,7 +156,7 @@ function Crud() {
                   type="button"
                   className="close"
                   aria-label="Close"
-                  onClick={""}
+                  onClick={() => setDeleteDataModal(false)}
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -148,7 +168,7 @@ function Crud() {
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={()=>setDeleteDataModal(false)}
+                  onClick={() => setDeleteDataModal(false)}
                 >
                   Cancel
                 </button>
@@ -176,7 +196,9 @@ function Crud() {
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Add New Member</h5>
+                <h5 className="modal-title">
+                  {selectedMember ? "Edit Member" : "Add New Member"}
+                </h5>
                 <button
                   type="button"
                   className="close"
@@ -240,9 +262,11 @@ function Crud() {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={handleAddNewMember}
+                  onClick={
+                    selectedMember ? handleEdit : handleAddNewMember
+                  }
                 >
-                  Add Member
+                  {selectedMember ? "Save Changes" : "Add Member"}
                 </button>
               </div>
             </div>
@@ -251,7 +275,9 @@ function Crud() {
       )}
 
       {/* Modal backdrop */}
-      {openModal && <div className="modal-backdrop fade show"></div>}
+      {(openModal || deleteDataModal) && (
+        <div className="modal-backdrop fade show"></div>
+      )}
     </div>
   );
 }
